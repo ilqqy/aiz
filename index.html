@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AiZ ściąga</title>
+<style>
+:root{--bg:#f7f5ef;--card:#fffdf8;--ink:#1c2b30;--muted:#5a6b70;--line:#d9dfd9;--acc:#0b6b5f;--warn:#b0452c;--warnbg:#fbe9e1;--boxbg:#e3f0ea;--code:#13262c;--codeink:#e6f2ec;--kw:#ffb86b;--cm:#86a39a;--num:#9fd6ff;--str:#c3e88d;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1e23;--card:#16292f;--ink:#e8f0ec;--muted:#9fb5b3;--line:#2f4a50;--acc:#8fe0c4;--warn:#ffab91;--warnbg:#3d2a25;--boxbg:#1d3a35;--code:#0a161a;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,'Segoe UI',Arial,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:8px 16px}
+header h1{font-size:18px;margin:0 0 6px}
+nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--acc);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;background:var(--bg)}
+main{max-width:1000px;margin:0 auto;padding:12px 16px 80px}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:18px 0;scroll-margin-top:96px}
+h2{margin:0 0 12px;font-size:22px} h3{margin:20px 0 8px;font-size:17px}
+code{font:14px/1.45 ui-monospace,'Cascadia Code',Consolas,'DejaVu Sans Mono',monospace;background:var(--boxbg);padding:1px 4px;border-radius:4px}
+.code{position:relative;margin:12px 0}
+.ctitle{font-weight:600;font-size:14px;margin:0 0 4px;color:var(--acc)}
+pre{margin:0;background:var(--code);color:var(--codeink);padding:14px 14px;border-radius:10px;overflow-x:auto}
+pre code{background:none;padding:0;color:inherit;font-size:13.5px}
+pre.trace{font:13.5px/1.5 ui-monospace,Consolas,monospace;white-space:pre;margin:10px 0}
+.copy{position:absolute;right:8px;top:26px;font-size:12px;border:1px solid #3a5860;background:#1f3940;color:#e6f2ec;border-radius:6px;padding:3px 8px;cursor:pointer;opacity:.85}
+.code:not(:has(.ctitle)) .copy{top:6px}
+.copy:hover{opacity:1}
+.kw{color:var(--kw)} .cm{color:var(--cm);font-style:italic} .nm{color:var(--num)} .st{color:var(--str)}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14.5px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--boxbg)}
+.box{background:var(--boxbg);border-left:4px solid var(--acc);padding:10px 14px;border-radius:6px;margin:12px 0}
+.warn{background:var(--warnbg);border-left-color:var(--warn)}
+.muted{color:var(--muted);font-size:14.5px}
+.steps li,.traps li{margin:4px 0}
+#q{width:100%;max-width:360px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;margin-bottom:6px}
+</style></head><body>
+<header><h1>AiZ ściąga · Algorytmy i złożoność (W01–W06)</h1>
+<input id="q" type="search" placeholder="фильтр разделов: sort, rekur, random…">
+<nav><a href="#start">⚡ На колоквиуме: порядок действий</a><a href="#skeleton">🧱 Каркас файла</a><a href="#basics">🔤 База Java, на которой всё ломается</a><a href="#arrays">📦 Массивы: кирпичики</a><a href="#rs">🎲 Random и ⌨️ Scanner (нет в лекциях, но было на колоквиуме)</a><a href="#rec">🔁 Рекурсия</a><a href="#sorts">📊 Сортировки</a><a href="#search">🔍 Поиск</a><a href="#tasks">✅ Готовые решения (проверены, Java 23)</a><a href="#theory">📚 Теория коротко (если спросят словами)</a><a href="#traps">⚠️ Ловушки</a></nav></header>
+<main><section id="start"><h2>⚡ На колоквиуме: порядок действий</h2>
+<ol class="steps">
+<li><b>Прочитать условие</b> и выписать: имя класса/файла, сигнатуру метода, что вернуть, краевые случаи (пустой массив, 0, −1).</li>
+<li><b>Узнать тип задачи</b> → взять шаблон с этой страницы (рекурсия / массив / сортировка / поиск).</li>
+<li><b>Создать класс</b> в IntelliJ: ПКМ по <code>src</code> → New → Java Class → <i>имя из условия</i>.</li>
+<li><b>Вставить шаблон</b> и поменять только то, что отличается (условие в if, знак сравнения, ① и ② в рекурсии).</li>
+<li><b>main</b>: данные из примеров условия → вызов → вывод.</li>
+<li><b>Запустить ▶</b> и сверить с примерами. Потом пустой массив / 0 / один элемент.</li>
+<li><b>Чек-лист</b> ниже ↓</li>
+</ol>
+<div class="box warn"><b>Чек-лист перед сдачей</b>
+<ul>
+<li>Имя класса = имя файла = имя из условия (<code>ZnajdzNumer.java</code> ↔ <code>public class ZnajdzNumer</code>).</li>
+<li>Сигнатура метода <b>1:1</b> из условия: имя, <code>static</code>, тип результата, типы параметров.</li>
+<li><b>Нет запрещённого:</b> <code>Arrays.sort</code>, <code>Arrays.binarySearch</code>, циклы/String в задаче «рекурсивно».</li>
+<li>В циклах <code>arr.length</code>, а не число (<code>i &lt; 4</code> = ошибка).</li>
+<li>Проверяешь <code>arr[i]</code> (число), а не <code>i</code> (позицию).</li>
+<li>Метод <code>void</code> ничего не возвращает: сначала <code>sortScores(a);</code>, потом <code>println(Arrays.toString(a))</code>.</li>
+<li>Если просят комментарий-обоснование — он есть (см. «Сортировки»).</li>
+</ul></div>
+<h3>IntelliJ: сокращения (пишешь → Tab)</h3>
+<table><tr><th>пишешь</th><th>получаешь</th></tr>
+<tr><td><code>psvm</code></td><td><code>public static void main(String[] args) { }</code></td></tr>
+<tr><td><code>sout</code></td><td><code>System.out.println();</code></td></tr>
+<tr><td><code>fori</code></td><td><code>for (int i = 0; i &lt; ; i++) { }</code></td></tr>
+<tr><td><code>itar</code></td><td>цикл по массиву с <code>arr.length</code></td></tr>
+<tr><td><b>Alt + Enter</b></td><td>на красном: автоисправление (например, добавить <code>import</code>)</td></tr>
+<tr><td><b>Ctrl + Space</b></td><td>подсказка методов (<code>Arrays.</code> → <code>toString</code>)</td></tr>
+<tr><td><b>Ctrl + Alt + L</b></td><td>отформатировать код</td></tr>
+<tr><td><b>Debugger</b> (жук) + <b>F8</b></td><td>клик слева от номера строки = точка остановки; F8 = следующая строка, видно значения <code>i</code>, <code>left</code>, <code>count</code></td></tr>
+</table>
+</section><section id="skeleton"><h2>🧱 Каркас файла</h2><div class="code"><button class="copy" type="button">копировать</button><pre><code>import java.util.Arrays;     // если печатаешь массив
+import java.util.Random;     // если случайные числа
+import java.util.Scanner;    // если ввод с консоли
+
+public class NazwaZZadania {                    // = имя файла NazwaZZadania.java
+
+    static int metodaZZadania(int[] numbers) {  // сигнатура 1:1 из условия
+        // rozwiązanie
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        int[] dane = {8, 3, 8, -1, 0};          // данные прямо в main
+        System.out.println(metodaZZadania(dane));
+    }
+}</code></pre></div>
+<table><tr><th>что</th><th>как</th></tr>
+<tr><td>напечатать число</td><td><code>System.out.println(x);</code></td></tr>
+<tr><td>напечатать массив</td><td><code>System.out.println(Arrays.toString(a));</code> → <code>[1, 2, 3]</code></td></tr>
+<tr><td>новый массив с данными</td><td><code>int[] a = {4, 9, 12};</code> или в вызове <code>new int[]{4, 9, 12}</code></td></tr>
+<tr><td>пустой массив длины n</td><td><code>int[] a = new int[n];</code> (все ячейки = 0)</td></tr>
+<tr><td>пустой массив</td><td><code>new int[]{}</code></td></tr>
+<tr><td>копия массива</td><td><code>int[] b = a.clone();</code></td></tr>
+</table></section><section id="basics"><h2>🔤 База Java, на которой всё ломается</h2>
+<table><tr><th>выражение</th><th>результат</th><th>почему</th></tr>
+<tr><td><code>52 / 10</code></td><td><b>5</b></td><td>int / int отбрасывает дробь (не 5.2!)</td></tr>
+<tr><td><code>52 % 10</code></td><td><b>2</b></td><td>остаток = последняя цифра</td></tr>
+<tr><td><code>7 / 2</code>, <code>9 / 10</code></td><td>3, 0</td><td></td></tr>
+<tr><td><code>-3 % 2</code></td><td><b>−1</b></td><td>знак остатка = знак числа → нечётность проверять <code>!= 0</code></td></tr>
+<tr><td><code>twice(4)</code> где <code>return x * 2</code></td><td>8</td><td>вызов метода «заменяется» на то, что он вернул</td></tr>
+</table>
+<div class="box"><b>Индексы:</b> массив длины n имеет позиции <b>0 … n−1</b>. <code>arr.length</code> = сколько элементов. Последний = <code>arr[arr.length - 1]</code>.<br>
+<code>i</code> — <b>позиция</b>, <code>arr[i]</code> — <b>число</b> на этой позиции.<br>
+<code>==</code> сравнивает, <code>=</code> присваивает. <code>&amp;&amp;</code> = и, <code>||</code> = или, <code>!</code> = не.</div>
+<h3>Условия для if</h3>
+<table><tr><th>смысл</th><th>условие</th></tr>
+<tr><td>делится на k</td><td><code>arr[i] % k == 0</code></td></tr>
+<tr><td>чётное</td><td><code>arr[i] % 2 == 0</code></td></tr>
+<tr><td><b>нечётное</b></td><td><code>arr[i] % 2 != 0</code> &nbsp;(<b>не</b> <code>== 1</code> — ломается на отрицательных)</td></tr>
+<tr><td>не делится на k</td><td><code>arr[i] % k != 0</code></td></tr>
+<tr><td>положительное / отрицательное</td><td><code>arr[i] &gt; 0</code> / <code>arr[i] &lt; 0</code></td></tr>
+<tr><td>в диапазоне [a, b]</td><td><code>arr[i] &gt;= a &amp;&amp; arr[i] &lt;= b</code> &nbsp;(<b>не</b> <code>a &lt;= x &lt;= b</code>)</td></tr>
+<tr><td>последняя цифра = 7</td><td><code>arr[i] % 10 == 7</code> (для отрицательных: <code>Math.abs(arr[i]) % 10 == 7</code>)</td></tr>
+</table>
+<p class="muted">Большие суммы → <code>long</code> (int максимум ≈ 2,1 млрд). Пустой массив обрабатывать так, как сказано в условии (−1 / пустой результат / исключение).</p></section><section id="arrays"><h2>📦 Массивы: кирпичики</h2><p>Почти любая задача с массивом — комбинация этих кусков. Меняется обычно <b>одна строка</b> (условие или формула).</p><div class="code"><div class="ctitle">Счётчик «сколько элементов …»</div><button class="copy" type="button">копировать</button><pre><code>int count = 0;
+for (int i = 0; i &lt; arr.length; i++) {
+    if (arr[i] % 4 == 0) {          // &lt;- меняешь только условие
+        count++;
+    }
+}
+System.out.println(count);</code></pre></div><div class="code"><div class="ctitle">Сумма</div><button class="copy" type="button">копировать</button><pre><code>long total = 0;
+for (int i = 0; i &lt; arr.length; i++) {
+    total += arr[i];
+}
+// среднее: (double) total / arr.length   (если arr.length &gt; 0)</code></pre></div><div class="code"><div class="ctitle">Минимум и максимум</div><button class="copy" type="button">копировать</button><pre><code>if (arr.length == 0) {
+    throw new IllegalArgumentException(&quot;Pusta tablica&quot;);
+}
+int min = arr[0];                    // НЕ min = 0 !
+int max = arr[0];
+for (int i = 1; i &lt; arr.length; i++) {
+    if (arr[i] &lt; min) {
+        min = arr[i];
+    }
+    if (arr[i] &gt; max) {
+        max = arr[i];
+    }
+}</code></pre></div><div class="code"><div class="ctitle">Суммы префиксов (sumy prefiksowe)</div><button class="copy" type="button">копировать</button><pre><code>long[] result = new long[arr.length];
+long total = 0;
+for (int i = 0; i &lt; arr.length; i++) {
+    total += arr[i];
+    result[i] = total;              // [3, 1, 2, 10] -&gt; [3, 4, 6, 16]
+}</code></pre></div><div class="code"><div class="ctitle">Первая половина (новый массив)</div><button class="copy" type="button">копировать</button><pre><code>int half = arr.length / 2;           // 7 элементов -&gt; half = 3
+int[] result = new int[half];
+for (int i = 0; i &lt; half; i++) {
+    result[i] = arr[i];
+}</code></pre></div><div class="code"><div class="ctitle">Вторая половина (новый массив)</div><button class="copy" type="button">копировать</button><pre><code>int half = arr.length / 2;
+int[] result = new int[arr.length - half];   // при нечётной длине во второй половине на 1 больше
+for (int i = 0; i &lt; result.length; i++) {
+    result[i] = arr[half + i];               // сдвиг на half
+}</code></pre></div><div class="code"><div class="ctitle">Новый массив только из подходящих элементов (фильтр)</div><button class="copy" type="button">копировать</button><pre><code>// сначала посчитать, сколько подходит, потом заполнить
+int count = 0;
+for (int i = 0; i &lt; arr.length; i++) {
+    if (arr[i] % 4 == 0) {
+        count++;
+    }
+}
+int[] result = new int[count];
+int k = 0;                                   // следующая свободная позиция в result
+for (int i = 0; i &lt; arr.length; i++) {
+    if (arr[i] % 4 == 0) {
+        result[k] = arr[i];
+        k++;
+    }
+}</code></pre></div><div class="code"><div class="ctitle">Swap: поменять два элемента</div><button class="copy" type="button">копировать</button><pre><code>int temp = arr[x];
+arr[x] = arr[y];
+arr[y] = temp;</code></pre></div><div class="code"><div class="ctitle">Переворот на месте (весь / половина)</div><button class="copy" type="button">копировать</button><pre><code>int start = 0;                 // весь массив: 0      | вторая половина: arr.length / 2
+int end = arr.length - 1;      // весь массив: n - 1  | первая половина: arr.length / 2 - 1
+while (start &lt; end) {
+    int temp = arr[start];
+    arr[start] = arr[end];
+    arr[end] = temp;
+    start++;
+    end--;
+}
+// [1, 2, 3, 4, 5] -&gt; [5, 4, 3, 2, 1]   (середина 3 не двигается)
+// вторая половина [1, 2, 5, 5, 6, 9] -&gt; [1, 2, 5, 9, 6, 5]</code></pre></div><div class="code"><div class="ctitle">Перевёрнутая копия (новый массив)</div><button class="copy" type="button">копировать</button><pre><code>int[] result = new int[arr.length];
+for (int i = 0; i &lt; arr.length; i++) {
+    result[i] = arr[arr.length - 1 - i];
+}</code></pre></div></section><section id="rs"><h2>🎲 Random и ⌨️ Scanner (нет в лекциях, но было на колоквиуме)</h2><div class="code"><div class="ctitle">Random</div><button class="copy" type="button">копировать</button><pre><code>import java.util.Random;                       // первая строка файла
+
+Random rnd = new Random();
+int x = rnd.nextInt(10);                       // 0..9   (10 НЕ входит)
+int y = rnd.nextInt(b - a + 1) + a;            // от a до b включительно
+int kostka = rnd.nextInt(6) + 1;               // 1..6
+int even = rnd.nextInt(101) * 2 - 100;         // чётные -100..100
+int odd = rnd.nextInt(50) * 2 + 1;             // нечётные 1..99
+
+int[] arr = new int[n];
+for (int i = 0; i &lt; n; i++) {
+    arr[i] = rnd.nextInt(101) * 2 - 100;
+}</code></pre></div>
+<p class="muted">Чётные/нечётные «по-простому»: сгенерировать любое число и, если не подходит, <code>+1</code> или повторить. Формула выше надёжнее.</p><div class="code"><div class="ctitle">Scanner: прочитать n и n чисел</div><button class="copy" type="button">копировать</button><pre><code>import java.util.Scanner;
+
+Scanner sc = new Scanner(System.in);
+System.out.print(&quot;Podaj n: &quot;);
+int n = sc.nextInt();                          // одно целое число
+while (n &lt;= 3) {                               // если условие &quot;n &gt; 3&quot;
+    System.out.print(&quot;n musi być &gt; 3: &quot;);
+    n = sc.nextInt();
+}
+int[] arr = new int[n];
+for (int i = 0; i &lt; n; i++) {
+    arr[i] = sc.nextInt();                     // n чисел в массив
+}
+// sc.nextDouble(), sc.next() (слово), sc.nextLine() (строка)</code></pre></div></section><section id="rec"><h2>🔁 Рекурсия</h2>
+<div class="box"><b>Правило:</b> (1) <b>przypadek bazowy</b> — когда ответ известен сразу; (2) <b>krok rekurencyjny</b> — вызов себя с <b>меньшим</b> аргументом и <b>использование результата</b>.<br>
+<b>Как найти ① и ②:</b> посчитай руками для 7, 23, 234. ① = ответ для одной цифры. ② = как ответ для 234 получается из ответа для 23 и цифры 4.</div><div class="code"><div class="ctitle">Шаблон: рекурсия по цифрам числа</div><button class="copy" type="button">копировать</button><pre><code>static int f(int n) {
+    if (n &lt; 10) {
+        return ①;                  // ответ для однозначного числа
+    }
+    int lastDigit = n % 10;         // 234 -&gt; 4
+    int rest = f(n / 10);           // ответ для 23
+    return ②;                      // склеить lastDigit и rest
+}</code></pre></div>
+<table><tr><th>задача</th><th>①</th><th>②</th><th>пример</th></tr>
+<tr><td>сумма цифр</td><td><code>n</code></td><td><code>lastDigit + rest</code></td><td>742 → 13</td></tr>
+<tr><td>произведение цифр</td><td><code>n</code></td><td><code>lastDigit * rest</code></td><td>234 → 24, 205 → 0, 0 → 0</td></tr>
+<tr><td>количество цифр</td><td><code><b>1</b></code></td><td><code>rest + 1</code></td><td>234 → 3, 0 → 1</td></tr>
+<tr><td>максимальная цифра</td><td><code>n</code></td><td><code>Math.max(lastDigit, rest)</code></td><td>274 → 7, 91 → 9</td></tr>
+<tr><td>минимальная цифра</td><td><code>n</code></td><td><code>Math.min(lastDigit, rest)</code></td><td>274 → 2</td></tr>
+<tr><td>сколько чётных цифр</td><td>n чётное → <code>1</code>, иначе <code>0</code> (if/else)</td><td>lastDigit чётная → <code>rest + 1</code>, иначе <code>rest</code></td><td>2741 → 2</td></tr>
+</table>
+<div class="box warn">Ловушки: <code>f(n + 1)</code> или <code>f(n)</code> → нет прогресса → <b>StackOverflowError</b>. <code>f(n / 10);</code> без использования результата → неверный ответ. <code>return 5</code> вместо <code>return n</code> — n это любое число. «Рекурсивно» = <b>без циклов</b> и без <code>String</code>.</div><div class="code"><div class="ctitle">Silnia (factorial)</div><button class="copy" type="button">копировать</button><pre><code>static long factorial(int n) {      // 0 &lt;= n &lt;= 20
+    if (n == 0) {
+        return 1;                    // 0! = 1
+    }
+    long child = factorial(n - 1);
+    return n * child;                // 3! = 3 * 2! = 6
+}</code></pre></div><div class="code"><div class="ctitle">Fibonacci (рекурсивно, лекция 05)</div><button class="copy" type="button">копировать</button><pre><code>static long fib(int n) {             // F(0)=0, F(1)=1, F(n)=F(n-1)+F(n-2)
+    if (n &lt;= 1) {
+        return n;
+    }
+    long left = fib(n - 1);
+    long right = fib(n - 2);
+    return left + right;             // fib(10) = 55
+}</code></pre></div><div class="code"><div class="ctitle">Fibonacci циклом (если спросят «porównaj»)</div><button class="copy" type="button">копировать</button><pre><code>static long fibIter(int n) {         // без рекурсии: Θ(n) czasu, O(1) pamięci
+    if (n &lt;= 1) {
+        return n;
+    }
+    long a = 0;
+    long b = 1;
+    for (int i = 2; i &lt;= n; i++) {
+        long next = a + b;
+        a = b;
+        b = next;
+    }
+    return b;
+}</code></pre></div><div class="code"><div class="ctitle">Ещё: степень, сумма массива рекурсивно</div><button class="copy" type="button">копировать</button><pre><code>static int power(int base, int exp) {     // base^exp, exp &gt;= 0
+    if (exp == 0) {
+        return 1;
+    }
+    int rest = power(base, exp - 1);
+    return base * rest;                    // power(2, 10) = 1024
+}
+
+static int sumArray(int[] a, int i) {     // вызов: sumArray(a, 0)
+    if (i == a.length) {
+        return 0;                          // пустой «хвост»
+    }
+    int rest = sumArray(a, i + 1);
+    return a[i] + rest;
+}</code></pre></div><h3>Trace: как это исполняется</h3>
+<pre class="trace">productDigits(234): 234 >= 10 → lastDigit 4, вызывает productDigits(23)
+  productDigits(23): 23 >= 10 → lastDigit 3, вызывает productDigits(2)
+    productDigits(2): 2 < 10 → return 2            ← база
+  rest = 2 → return 3 * 2 = 6
+rest = 6 → return 4 * 6 = 24</pre>
+<p>Каждый вызов имеет <b>свою</b> переменную <code>n</code> (ramka stosu). Вызовы идут вниз до базы, результаты поднимаются вверх. fib(4): 9 вызовов, но на стеке одновременно ≤ 4.</p></section><section id="sorts"><h2>📊 Сортировки</h2>
+<table><tr><th>алгоритм</th><th>идея</th><th>уже отсортировано</th><th>худший</th><th>память</th><th>stabilny</th></tr>
+<tr><td><b>Insertion</b></td><td>вставить карту в отсортированный левый кусок</td><td>Θ(n)</td><td>Θ(n²)</td><td>O(1)</td><td>да</td></tr>
+<tr><td><b>Bubble</b> (с <code>changed</code>)</td><td>менять соседей, максимум всплывает в конец</td><td>Θ(n)</td><td>Θ(n²)</td><td>O(1)</td><td>да</td></tr>
+<tr><td><b>Selection</b></td><td>найти минимум остатка, поменять с первым</td><td>Θ(n²)</td><td>Θ(n²)</td><td>O(1)</td><td>нет</td></tr>
+<tr><td><b>QuickSort</b> (Lomuto)</td><td>pivot, ≤ влево, > вправо, рекурсия</td><td><b>Θ(n²)</b> (!)</td><td>Θ(n²)</td><td>стек O(log n)…Θ(n)</td><td>нет</td></tr>
+<tr><td><b>MergeSort</b></td><td>пополам, отсортировать, слить</td><td>Θ(n log n)</td><td>Θ(n log n)</td><td>O(n)</td><td>да</td></tr>
+</table>
+<div class="box"><b>По убыванию (malejąco):</b> переворачиваешь <b>только знак сравнения элементов</b> (помечен <code>// &lt;-</code>). Циклы не трогаешь.<br>
+<b>Stabilność:</b> равные элементы сохраняют свой порядок. Insertion/Bubble стабильны, потому что сравнение строгое <code>&gt;</code>, не <code>&gt;=</code>.</div>
+<h3>Insertion Sort (przez wstawianie)</h3><div class="code"><button class="copy" type="button">копировать</button><pre><code>static void insertionSort(int[] a) {
+    for (int i = 1; i &lt; a.length; i++) {      // берём карты со второй
+        int key = a[i];                        // карта в руке
+        int j = i - 1;
+        while (j &gt;= 0 &amp;&amp; a[j] &gt; key) {         // &lt;- убывание: a[j] &lt; key
+            a[j + 1] = a[j];                   // сдвиг вправо (не swap!)
+            j--;
+        }
+        a[j + 1] = key;                        // вставить в освободившееся место
+    }
+}</code></pre></div>
+<pre class="trace">[4, 2, 5, 3]
+key=2: 4>2 сдвиг             → [2, 4, 5, 3]
+key=5: 4>5? нет              → [2, 4, 5, 3]
+key=3: 5>3 сдвиг, 4>3 сдвиг, 2>3? нет → [2, 3, 4, 5]</pre>
+<h3>Bubble Sort (bąbelkowe)</h3><div class="code"><button class="copy" type="button">копировать</button><pre><code>static void bubbleSort(int[] a) {
+    for (int end = a.length - 1; end &gt; 0; end--) {
+        boolean changed = false;
+        for (int j = 0; j &lt; end; j++) {
+            if (a[j] &gt; a[j + 1]) {             // &lt;- убывание: a[j] &lt; a[j + 1]
+                int t = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = t;
+                changed = true;
+            }
+        }
+        if (!changed) {
+            break;                             // проход без замен -&gt; готово
+        }
+    }
+}</code></pre></div>
+<pre class="trace">[4, 2, 5, 3]
+проход 1: (4,2) swap → [2,4,5,3]; (4,5) ок; (5,3) swap → [2,4,3,5]   ← 5 на месте
+проход 2: (2,4) ок; (4,3) swap → [2,3,4,5]
+проход 3: замен нет → break
+[3,1,2]: проход 1 → [1,2,3], проход 2 без замен → стоп  (= 2 прохода, не 1!)</pre>
+<h3>Selection Sort (przez wybieranie)</h3><div class="code"><button class="copy" type="button">копировать</button><pre><code>static void selectionSort(int[] a) {
+    for (int i = 0; i &lt; a.length - 1; i++) {
+        int min = i;                           // индекс минимума остатка
+        for (int j = i + 1; j &lt; a.length; j++) {
+            if (a[j] &lt; a[min]) {               // &lt;- убывание: a[j] &gt; a[min]
+                min = j;
+            }
+        }
+        int tmp = a[i];
+        a[i] = a[min];
+        a[min] = tmp;
+    }
+}</code></pre></div>
+<pre class="trace">[4, 2, 5, 3]
+i=0: минимум 2 → swap с 4 → [2, 4, 5, 3]
+i=1: минимум 3 → swap с 4 → [2, 3, 5, 4]
+i=2: минимум 4 → swap с 5 → [2, 3, 4, 5]
+сравнений всегда n(n−1)/2 (для 4 элементов: 3+2+1 = 6)</pre>
+<h3>Комментарий-обоснование (если просят «uzasadnij wybór»)</h3><div class="code"><div class="ctitle">Insertion</div><button class="copy" type="button">копировать</button><pre><code>// Wybrany algorytm: Insertion Sort.
+// Tablica ma najwyżej 30 elementów, więc złożoność O(n²) w najgorszym przypadku jest wystarczająca,
+// a dla danych prawie uporządkowanych algorytm działa w czasie bliskim O(n).
+// Sortuje w miejscu (pamięć dodatkowa O(1)) i jest stabilny, więc poprawnie obsługuje powtarzające się wyniki.</code></pre></div><div class="code"><div class="ctitle">Bubble</div><button class="copy" type="button">копировать</button><pre><code>// Wybrany algorytm: Bubble Sort z flagą changed.
+// Dla małej tablicy (do 30 elementów) czas O(n²) w najgorszym przypadku jest akceptowalny,
+// a gdy dane są już uporządkowane, flaga kończy sortowanie po jednym przebiegu, czyli w czasie O(n).
+// Działa w miejscu z pamięcią O(1) i jest stabilny, bo zamienia tylko gdy lewy element jest większy.</code></pre></div><div class="code"><div class="ctitle">Selection</div><button class="copy" type="button">копировать</button><pre><code>// Wybrany algorytm: Selection Sort.
+// Tablica jest mała (do 30 elementów), więc stała złożoność O(n²) nie stanowi problemu.
+// Algorytm wykonuje najwyżej n − 1 zamian i potrzebuje tylko O(1) dodatkowej pamięci.
+// Nie jest stabilny, ale dla samych liczb całkowitych kolejność równych wartości nie ma znaczenia.</code></pre></div><h3>QuickSort (podział Lomuto, лекция 06)</h3><div class="code"><button class="copy" type="button">копировать</button><pre><code>static void quickSort(int[] a, int l, int r) {     // вызов: quickSort(a, 0, a.length - 1)
+    if (l &gt;= r) {
+        return;                                     // 0 или 1 элемент
+    }
+    int pivot = a[r];                               // pivot = последний
+    int i = l;                                      // следующее место для &quot;&lt;= pivot&quot;
+    for (int j = l; j &lt; r; j++) {
+        if (a[j] &lt;= pivot) {                        // &lt;- убывание: a[j] &gt;= pivot
+            int t = a[i];
+            a[i] = a[j];
+            a[j] = t;
+            i++;
+        }
+    }
+    int t = a[i];                                   // pivot на окончательное место i
+    a[i] = a[r];
+    a[r] = t;
+    quickSort(a, l, i - 1);
+    quickSort(a, i + 1, r);
+}</code></pre></div>
+<pre class="trace">[5, 2, 7, 1, 4], pivot = 4, i = 0
+j=0: 5 > 4 пропуск
+j=1: 2 ≤ 4 swap a[0]↔a[1] → [2, 5, 7, 1, 4], i=1
+j=2: 7 > 4 пропуск
+j=3: 1 ≤ 4 swap a[1]↔a[3] → [2, 1, 7, 5, 4], i=2
+pivot ↔ a[2] → [2, 1 | 4 | 5, 7]   → дальше сортируем [2,1] и [5,7]</pre>
+<p class="muted">Худший случай Θ(n²): уже отсортированные данные или все равные (одна часть пустая). Лучший/средний Θ(n log n).</p>
+<h3>MergeSort (scalanie)</h3><div class="code"><button class="copy" type="button">копировать</button><pre><code>static int[] merge(int[] a, int[] b) {
+    int[] result = new int[a.length + b.length];
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    while (i &lt; a.length &amp;&amp; j &lt; b.length) {
+        if (a[i] &lt;= b[j]) {                // &lt;= : при равенстве берём левый -&gt; стабильно
+            result[k] = a[i];
+            i++;
+        } else {
+            result[k] = b[j];
+            j++;
+        }
+        k++;
+    }
+    while (i &lt; a.length) {                 // остаток копируем без сравнений
+        result[k] = a[i];
+        i++;
+        k++;
+    }
+    while (j &lt; b.length) {
+        result[k] = b[j];
+        j++;
+        k++;
+    }
+    return result;
+}
+
+static int[] mergeSort(int[] a) {          // нужен import java.util.Arrays;
+    if (a.length &lt;= 1) {
+        return a.clone();
+    }
+    int mid = a.length / 2;
+    int[] left = mergeSort(Arrays.copyOfRange(a, 0, mid));
+    int[] right = mergeSort(Arrays.copyOfRange(a, mid, a.length));
+    return merge(left, right);
+}</code></pre></div>
+<pre class="trace">merge([2, 5], [1, 7]):  1 (из правой) → 2 → 5 (левая кончилась) → дописать 7 → [1, 2, 5, 7]
+mergeSort([5,2,7,1]) → [5,2] [7,1] → [5][2][7][1] → [2,5] [1,7] → [1,2,5,7]</pre></section><section id="search"><h2>🔍 Поиск</h2><div class="code"><div class="ctitle">Линейный поиск</div><button class="copy" type="button">копировать</button><pre><code>static int linearSearch(int[] a, int x) {     // любые данные, O(n)
+    for (int i = 0; i &lt; a.length; i++) {
+        if (a[i] == x) {
+            return i;
+        }
+    }
+    return -1;
+}</code></pre></div><div class="code"><div class="ctitle">Binary search (индекс или −1)</div><button class="copy" type="button">копировать</button><pre><code>static int binarySearch(int[] a, int target) {   // ТОЛЬКО отсортированный массив, O(log n)
+    int left = 0;
+    int right = a.length - 1;
+    while (left &lt;= right) {
+        int mid = left + (right - left) / 2;      // пересчитывать КАЖДЫЙ круг
+        if (a[mid] == target) {
+            return mid;
+        } else if (a[mid] &lt; target) {
+            left = mid + 1;                       // середина мала -&gt; вправо
+        } else {
+            right = mid - 1;                      // середина велика -&gt; влево
+        }
+    }
+    return -1;                                    // пустой массив тоже даст -1
+}</code></pre></div>
+<pre class="trace">[4, 9, 12, 18, 23, 31]   (индексы 0..5)
+target 23: (L0 R5 mid2: 12<23 → L=3) → (L3 R5 mid4: 23==23) → 4
+target 10: (L0 R5 mid2: 12>10 → R=1) → (L0 R1 mid0: 4<10 → L=1) → (L1 R1 mid1: 9<10 → L=2) → L>R → −1
+Следующая строка = те же L,R, но ОДНА граница сдвинута на mid±1.</pre>
+<p><b>Массив по убыванию?</b> Поменять местами <code>left = mid + 1</code> и <code>right = mid - 1</code> (т.е. условие <code>a[mid] &gt; target</code> → вправо).</p><div class="code"><div class="ctitle">Позиция вставки / первое вхождение (lower bound)</div><button class="copy" type="button">копировать</button><pre><code>static int insertPosition(int[] a, int x) {     // первая позиция с a[pos] &gt;= x (LeetCode 35)
+    int left = 0;
+    int right = a.length;                        // [left, right) — right не входит
+    while (left &lt; right) {
+        int mid = left + (right - left) / 2;
+        if (a[mid] &lt; x) {
+            left = mid + 1;
+        } else {
+            right = mid;                         // равенство НЕ останавливает
+        }
+    }
+    return left;                                 // [1,3,3,3,8]: x=3 -&gt; 1, x=10 -&gt; 5
+}</code></pre></div><p class="muted">Первое вхождение x: <code>pos = insertPosition(a, x)</code>; если <code>pos &lt; a.length &amp;&amp; a[pos] == x</code> → pos, иначе −1.</p></section><section id="tasks"><h2>✅ Готовые решения (проверены, Java 23)</h2><p>Задачи из PDF (wariant C) и задачи с колоквиума однокурсника — целыми файлами.</p><div class="code"><div class="ctitle">PDF 1 · ZnajdzNumer.java — binary search</div><button class="copy" type="button">копировать</button><pre><code>public class ZnajdzNumer {
+
+    // Wyszukiwanie binarne w tablicy uporządkowanej rosnąco; zwraca indeks albo -1.
+    static int findNumber(int[] numbers, int target) {
+        int left = 0;
+        int right = numbers.length - 1;
+        while (left &lt;= right) {
+            int mid = left + (right - left) / 2;
+            if (numbers[mid] == target) {
+                return mid;
+            } else if (numbers[mid] &lt; target) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        // przykłady z polecenia
+        System.out.println(findNumber(new int[]{4, 9, 12, 18, 23, 31}, 12)); // 2
+        System.out.println(findNumber(new int[]{4, 9, 12, 18, 23, 31}, 32)); // -1
+        System.out.println(findNumber(new int[]{}, 12));                     // -1
+        // przypadki brzegowe
+        System.out.println(findNumber(new int[]{4, 9, 12, 18, 23, 31}, 4));  // 0
+        System.out.println(findNumber(new int[]{4, 9, 12, 18, 23, 31}, 31)); // 5
+        System.out.println(findNumber(new int[]{4, 9, 12, 18, 23, 31}, 1));  // -1
+        System.out.println(findNumber(new int[]{4, 9, 12, 18, 23, 31}, 10)); // -1
+        System.out.println(findNumber(new int[]{7}, 7));                     // 0
+        System.out.println(findNumber(new int[]{7}, 8));                     // -1
+    }
+}</code></pre></div><div class="code"><div class="ctitle">PDF 2 · IloczynCyfr.java — iloczyn cyfr rekurencyjnie</div><button class="copy" type="button">копировать</button><pre><code>public class IloczynCyfr {
+
+    // Zwraca iloczyn cyfr dziesiętnych liczby n (0 &lt;= n &lt;= 1 000 000 000).
+    static int productDigits(int n) {
+        if (n &lt; 10) {
+            // przypadek bazowy: jedna cyfra, w tym n = 0 -&gt; 0
+            return n;
+        }
+        int lastDigit = n % 10;
+        int rest = productDigits(n / 10);
+        return lastDigit * rest;
+    }
+
+    public static void main(String[] args) {
+        // przykłady z polecenia
+        System.out.println(productDigits(234));        // 24
+        System.out.println(productDigits(205));        // 0
+        System.out.println(productDigits(0));          // 0
+        // przypadki brzegowe
+        System.out.println(productDigits(7));          // 7
+        System.out.println(productDigits(10));         // 0
+        System.out.println(productDigits(111));        // 1
+        System.out.println(productDigits(999999999));  // 387420489
+        System.out.println(productDigits(1000000000)); // 0
+    }
+}</code></pre></div><div class="code"><div class="ctitle">PDF 3 · UporzadkujPunkty.java — Insertion Sort + uzasadnienie</div><button class="copy" type="button">копировать</button><pre><code>import java.util.Arrays;
+
+public class UporzadkujPunkty {
+
+    // Insertion Sort: porządkuje tablicę rosnąco, w miejscu.
+    static void sortScores(int[] scores) {
+        for (int i = 1; i &lt; scores.length; i++) {
+            int key = scores[i];
+            int j = i - 1;
+            while (j &gt;= 0 &amp;&amp; scores[j] &gt; key) {
+                scores[j + 1] = scores[j];
+                j--;
+            }
+            scores[j + 1] = key;
+        }
+    }
+
+    public static void main(String[] args) {
+        int[] a = {8, 3, 8, -1, 0};
+        sortScores(a);
+        System.out.println(Arrays.toString(a));   // [-1, 0, 3, 8, 8]
+
+        int[] b = {7};
+        sortScores(b);
+        System.out.println(Arrays.toString(b));   // [7]
+
+        int[] c = {};
+        sortScores(c);
+        System.out.println(Arrays.toString(c));   // []
+
+        int[] d = {1000, -1000, 5, 5, -1000};
+        sortScores(d);
+        System.out.println(Arrays.toString(d));   // [-1000, -1000, 5, 5, 1000]
+    }
+}
+
+// Wybrany algorytm: Insertion Sort.
+// Tablica ma najwyżej 30 elementów, więc złożoność O(n²) w najgorszym przypadku jest wystarczająca,
+// a dla danych prawie uporządkowanych algorytm działa w czasie bliskim O(n).
+// Sortuje w miejscu (pamięć dodatkowa O(1)) i jest stabilny, więc poprawnie obsługuje powtarzające się wyniki.</code></pre></div><div class="code"><div class="ctitle">Колоквиум A · Insertion Sort + перевернуть вторую половину</div><button class="copy" type="button">копировать</button><pre><code>import java.util.Arrays;
+
+public class EgzaminA {
+
+    // Insertion Sort (wykład 04): rosnąco, w tej samej tablicy.
+    static void insertionSort(int[] a) {
+        for (int i = 1; i &lt; a.length; i++) {
+            int key = a[i];
+            int j = i - 1;
+            while (j &gt;= 0 &amp;&amp; a[j] &gt; key) {
+                a[j + 1] = a[j];
+                j--;
+            }
+            a[j + 1] = key;
+        }
+    }
+
+    // Odwraca drugą połowę tablicy: indeksy od a.length / 2 do końca.
+    static void reverseSecondHalf(int[] a) {
+        int start = a.length / 2;
+        int end = a.length - 1;
+        while (start &lt; end) {
+            int temp = a[start];
+            a[start] = a[end];
+            a[end] = temp;
+            start++;
+            end--;
+        }
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {5, 2, 9, 1, 5, 6};
+        insertionSort(arr);
+        System.out.println(Arrays.toString(arr));   // [1, 2, 5, 5, 6, 9]
+        reverseSecondHalf(arr);
+        System.out.println(Arrays.toString(arr));   // [1, 2, 5, 9, 6, 5]
+
+        int[] odd = {3, 1, 2, 5, 4};
+        insertionSort(odd);
+        reverseSecondHalf(odd);
+        System.out.println(Arrays.toString(odd));   // [1, 2, 5, 4, 3]
+
+        int[] empty = {};
+        insertionSort(empty);
+        reverseSecondHalf(empty);
+        System.out.println(Arrays.toString(empty)); // []
+
+        int[] one = {7};
+        insertionSort(one);
+        reverseSecondHalf(one);
+        System.out.println(Arrays.toString(one));   // [7]
+    }
+}</code></pre></div><div class="code"><div class="ctitle">Колоквиум B · случайные чётные, сколько делится на 4, половина массива</div><button class="copy" type="button">копировать</button><pre><code>import java.util.Arrays;
+import java.util.Random;
+
+public class EgzaminB {
+
+    // n losowych liczb parzystych z przedziału [-100, 100].
+    static int[] randomEven(int n) {
+        Random rnd = new Random();
+        int[] arr = new int[n];
+        for (int i = 0; i &lt; n; i++) {
+            arr[i] = rnd.nextInt(101) * 2 - 100;   // 0..100 -&gt; 0..200 -&gt; -100..100, zawsze parzyste
+        }
+        return arr;
+    }
+
+    // Ile liczb dzieli się przez 4.
+    static int countDivisibleBy4(int[] arr) {
+        int count = 0;
+        for (int i = 0; i &lt; arr.length; i++) {
+            if (arr[i] % 4 == 0) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    // Nowa tablica z pierwszą połową elementów.
+    static int[] firstHalf(int[] arr) {
+        int half = arr.length / 2;
+        int[] result = new int[half];
+        for (int i = 0; i &lt; half; i++) {
+            result[i] = arr[i];
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        // test na stałych danych
+        int[] fixed = {-100, -6, 0, 4, 10, 12, -8};
+        System.out.println(countDivisibleBy4(fixed));             // 5  (-100, 0, 4, 12, -8)
+        System.out.println(Arrays.toString(firstHalf(fixed)));   // [-100, -6, 0]
+        System.out.println(countDivisibleBy4(new int[]{}));       // 0
+        System.out.println(Arrays.toString(firstHalf(new int[]{9}))); // []
+
+        // właściwe zadanie: dane losowe
+        int[] arr = randomEven(10);
+        System.out.println(Arrays.toString(arr));
+        System.out.println(countDivisibleBy4(arr));
+        System.out.println(Arrays.toString(firstHalf(arr)));
+    }
+}</code></pre></div><div class="code"><div class="ctitle">Пары · сумма цифр n с консоли (742 → 13)</div><button class="copy" type="button">копировать</button><pre><code>import java.util.Scanner;
+
+public class SumaCyfrKonsola {
+
+    static int sumDigits(int n) {
+        if (n &lt; 10) {
+            return n;
+        }
+        int lastDigit = n % 10;
+        int rest = sumDigits(n / 10);
+        return lastDigit + rest;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print(&quot;Podaj n &gt; 0: &quot;);
+        int n = sc.nextInt();
+        System.out.println(sumDigits(n));
+    }
+}</code></pre></div><div class="code"><div class="ctitle">Пары · Fibonacci рекурсивно, n с консоли</div><button class="copy" type="button">копировать</button><pre><code>import java.util.Scanner;
+
+public class FibonacciKonsola {
+
+    static long fib(int n) {
+        if (n &lt;= 1) {
+            return n;
+        }
+        long left = fib(n - 1);
+        long right = fib(n - 2);
+        return left + right;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print(&quot;Podaj n &gt;= 0: &quot;);
+        int n = sc.nextInt();
+        if (n &lt; 0) {
+            System.out.println(&quot;n musi być &gt;= 0&quot;);
+        } else {
+            System.out.println(&quot;F(&quot; + n + &quot;) = &quot; + fib(n));
+        }
+    }
+}</code></pre></div><div class="code"><div class="ctitle">Пары · прочитать n &gt; 3 и n чисел в массив</div><button class="copy" type="button">копировать</button><pre><code>import java.util.Arrays;
+import java.util.Scanner;
+
+public class TablicaKonsola {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print(&quot;Podaj n &gt; 3: &quot;);
+        int n = sc.nextInt();
+        while (n &lt;= 3) {
+            System.out.print(&quot;n musi być &gt; 3, podaj ponownie: &quot;);
+            n = sc.nextInt();
+        }
+        int[] arr = new int[n];
+        for (int i = 0; i &lt; n; i++) {
+            System.out.print(&quot;Liczba &quot; + (i + 1) + &quot;: &quot;);
+            arr[i] = sc.nextInt();
+        }
+        System.out.println(Arrays.toString(arr));
+    }
+}</code></pre></div></section><section id="theory"><h2>📚 Теория коротко (если спросят словами)</h2>
+<table><tr><th>термин (PL)</th><th>что это</th></tr>
+<tr><td>kontrakt, asercja początkowa P / końcowa Q</td><td>что верно до / после алгоритма. <code>{P} A {Q}</code>: если P и A <b>закончился</b> → Q. О завершении ничего не говорит.</td></tr>
+<tr><td>niezmiennik pętli (loop invariant)</td><td>свойство, верное перед каждой проверкой условия цикла: inicjalizacja → zachowanie → wyjście. Внутри тела может нарушаться.</td></tr>
+<tr><td>miara postępu / zakończenie</td><td>величина, которая строго уменьшается (n, длина [left, right]) → цикл/рекурсия кончится.</td></tr>
+<tr><td>złożoność czasowa / pamięciowa</td><td>как растёт число операций / доп. память с ростом n. Новый массив результата = O(n) памяти.</td></tr>
+<tr><td>przypadek bazowy / krok rekurencyjny</td><td>когда остановиться / как свести к меньшему.</td></tr>
+<tr><td>stos wywołań, ramka</td><td>каждый вызов — своя рамка со своими переменными; последний вызванный заканчивается первым. Слишком глубоко → StackOverflowError.</td></tr>
+<tr><td>stabilność</td><td>равные ключи сохраняют порядок (Insertion, Bubble, Merge — да; Selection, Quick — нет).</td></tr>
+<tr><td>przesunięcie vs zamiana</td><td>Insertion сдвигает (копирует вправо), Bubble/Selection меняют (swap).</td></tr>
+<tr><td>dziel i zwyciężaj</td><td>разбить на меньшие задачи того же вида, решить, собрать. QS: работа до вызовов (podział), MS: после (scalanie).</td></tr>
+<tr><td>pivot</td><td>опорный элемент в QuickSort; после podziału стоит на окончательной позиции.</td></tr>
+<tr><td>przekazywanie przez wartość</td><td>Java копирует значение аргумента; для массива — копию ссылки: <code>a[0] = 99</code> видно снаружи, <code>a = new int[]{}</code> — нет.</td></tr>
+</table>
+<table><tr><th>что</th><th>время</th><th>память</th></tr>
+<tr><td>a[i]</td><td>O(1)</td><td>O(1)</td></tr>
+<tr><td>сумма, min/max, линейный поиск</td><td>O(n)</td><td>O(1)</td></tr>
+<tr><td>binary search</td><td>O(log n)</td><td>O(1)</td></tr>
+<tr><td>Insertion/Bubble/Selection</td><td>O(n²)</td><td>O(1)</td></tr>
+<tr><td>MergeSort</td><td>Θ(n log n) всегда</td><td>O(n)</td></tr>
+<tr><td>QuickSort</td><td>Θ(n log n) средне, Θ(n²) худший</td><td>O(log n)…Θ(n) стек</td></tr>
+<tr><td>factorial рекурсивно</td><td>Θ(n)</td><td>Θ(n) стек</td></tr>
+<tr><td>fib наивно / циклом</td><td>O(2ⁿ) / Θ(n)</td><td>O(n) / O(1)</td></tr>
+<tr><td>сумма цифр рекурсивно</td><td>O(число цифр) = O(log n)</td><td>O(log n) стек</td></tr>
+</table></section><section id="traps"><h2>⚠️ Ловушки</h2>
+<ul class="traps">
+<li><code>i &lt;= arr.length</code> → ArrayIndexOutOfBoundsException. Правильно <code>i &lt; arr.length</code>.</li>
+<li>Число вместо переменной: <code>i &lt; 4</code>, <code>arr[3 + i]</code>, <code>return 5</code> → работает только на одном примере.</li>
+<li><code>i</code> вместо <code>arr[i]</code> в условии.</li>
+<li><code>&amp;</code> вместо <code>%</code>; <code>a &lt;= x &lt;= b</code> не компилируется.</li>
+<li>Нечётное через <code>% 2 == 1</code> — ломается на отрицательных.</li>
+<li><code>min = 0</code> вместо <code>min = arr[0]</code>.</li>
+<li><code>52 / 10</code> = 5, не 5.2.</li>
+<li>Рекурсия: аргумент не уменьшается; результат вызова не используется; неправильная база (у «количества цифр» база <code>1</code>).</li>
+<li>Binary search: <code>left = mid</code> (вечный цикл), <code>right = a.length</code> с <code>&lt;=</code>, mid не пересчитан, неотсортированный массив.</li>
+<li>Insertion: забыли <code>j &gt;= 0</code>; <code>&gt;=</code> вместо <code>&gt;</code> ломает стабильность.</li>
+<li>Bubble: остановка только после прохода <b>без</b> замен.</li>
+<li>По убыванию: меняется <b>знак сравнения</b>, а не <code>i++</code> → <code>i--</code>.</li>
+<li><code>println(sortScores(a))</code> для <code>void</code> — не компилируется.</li>
+<li>Вторая половина при нечётной длине: длина <code>arr.length - half</code>, не <code>half</code>. Неоднозначность «куда середина» — написать в комментарии, как понял.</li>
+<li>Готовые <code>Arrays.sort</code> / <code>Arrays.binarySearch</code> запрещены, если сказано «samodzielnie».</li>
+</ul></section></main>
+<script>
+(function(){
+  var KW=/\b(public|static|void|int|long|double|boolean|char|new|return|if|else|for|while|do|break|class|import|true|false|null|throw|String)\b/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function hl(src){
+    var re=/(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*")|\b(public|static|void|int|long|double|boolean|char|new|return|if|else|for|while|do|break|class|import|true|false|null|throw|String)\b|\b(\d+)\b/g;
+    var out='',last=0,m;
+    while((m=re.exec(src))!==null){
+      out+=esc(src.slice(last,m.index));
+      var cls=m[1]?'cm':(m[2]?'st':(m[3]?'kw':'nm'));
+      out+='<span class="'+cls+'">'+esc(m[0])+'</span>';
+      last=re.lastIndex;
+    }
+    return out+esc(src.slice(last));
+  }
+  document.querySelectorAll('pre code').forEach(function(el){ el.innerHTML=hl(el.textContent); });
+  document.querySelectorAll('.copy').forEach(function(b){
+    b.addEventListener('click',function(){
+      var t=b.parentNode.querySelector('pre code').textContent;
+      function ok(){b.textContent='скопировано ✓';setTimeout(function(){b.textContent='копировать';},1500);}
+      if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(ok,fallback);}else{fallback();}
+      function fallback(){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok();}catch(e){}document.body.removeChild(ta);}
+    });
+  });
+  var q=document.getElementById('q');
+  q.addEventListener('input',function(){
+    var v=q.value.trim().toLowerCase();
+    document.querySelectorAll('section').forEach(function(s){
+      s.style.display=(!v||s.textContent.toLowerCase().indexOf(v)>=0)?'':'none';
+    });
+  });
+})();
+</script>
+</body></html>
